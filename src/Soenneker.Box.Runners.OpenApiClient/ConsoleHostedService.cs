@@ -42,7 +42,7 @@ public sealed class ConsoleHostedService : IHostedService
 
                 try
                 {
-                    await _fileOperationsUtil.Process(cancellationToken);
+                    await _fileOperationsUtil.Process(_appLifetime.ApplicationStopping);
 
                     _logger.LogInformation("Complete!");
 
@@ -54,8 +54,6 @@ public sealed class ConsoleHostedService : IHostedService
                         Debugger.Break();
 
                     _logger.LogError(e, "Unhandled exception");
-
-                    await Task.Delay(2000, cancellationToken);
                     _exitCode = 1;
                 }
                 finally
@@ -63,7 +61,7 @@ public sealed class ConsoleHostedService : IHostedService
                     // Stop the application once the work is done
                     _appLifetime.StopApplication();
                 }
-            }, cancellationToken);
+            }, CancellationToken.None);
         });
 
         return Task.CompletedTask;
